@@ -79,7 +79,7 @@ def test_chain_mp(_info_, dif: int = 8, n_workers: int = 12, chunk_size: int = 1
     print(f'[-] Total time: {diff} seconds.')
     print(f'[-] Average Hash: {mh} MH.')
     print(f'[-] Average performance: {mu} MH/s.')
-    print(f'[-] Average performance per worker: {mu / computable_cpus} MH/(s·worker).')
+    print(f'[-] Average performance per worker: {mu / n_workers} MH/(s·worker).')
 
 
 def test_chain_ray(_info_, dif: int = 8, n_workers: int = 12, chunk_size: int = 1e8, computable_cpus: int = 36):

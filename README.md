@@ -1,15 +1,15 @@
-# Cluster usage: Test your RAY computing cluster.
+# Cluster usage: Test your RAY computing cluster. Python 3.10.8.
 
 <p align="center">
     <img src="https://github.com/iTzAlver/ClusterTest/blob/main/multimedia/cluster.png">
 </p>
 
 <p align="center">
-    <a href="https://github.com/iTzAlver/basenet_api/blob/main/LICENSE">
+    <a href="https://github.com/iTzAlver/ClusterTest/blob/main/LICENSE">
         <img src="https://img.shields.io/github/license/iTzAlver/basenet_api?color=purple&style=plastic" /></a>
-    <a href="https://github.com/iTzAlver/basenet_api/tree/main/test">
+    <a href="https://github.com/iTzAlver/ClusterTest/blob/main/test/run_all_tests.py">
         <img src="https://img.shields.io/badge/tests-passed-green?color=green&style=plastic" /></a>
-    <a href="https://github.com/iTzAlver/basenet_api/blob/main/requirements.txt">
+    <a href="https://github.com/iTzAlver/ClusterTest/blob/main/requirements.txt">
         <img src="https://img.shields.io/badge/requirements-ray-red?color=blue&style=plastic" /></a>
     <a href="https://docs.ray.io/en/latest/">
         <img src="https://img.shields.io/badge/doc-from ray-green?color=yellow&style=plastic" /></a>
@@ -58,6 +58,68 @@ is not needed.
 In order to coordinate the miners, the preamble is different for each miner, so two miners will not try to look for a valid hash 
 same preamble. The range of numbers that a miner is allowed to find a valid hash is called **chunk**. The script 
 generates the chunks automatically, but the user must tell the miner pool the chunk size.
+
+## Using ray
+
+To use ray you must have the same Python version as the cluster. In this case: ``python 3.10.8``. To connect with the 
+cluster you can call the ``init`` function:
+
+    import ray
+
+    ray.init(address='192.168.1.100:10001')
+
+The address is the RAY IP address of the master server. The port is ``10001`` by default.
+
+You must always try to shut down ray every time it is initialized. I recommend you to create a ``conext manager`` 
+for your class; so in case an exception or interruption is generated, the session is properly closed.
+
+    class MyRayActor:
+        def __init__(self, *args, **kwargs):
+            ray.init(address='192.168.1.100:10001', runtime_env={'working_dir': '.'})
+            print('[+]: Connected to RAY: 192.168.1.100:10001.')
+            ...
+
+        ...
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            ray.shutdown()
+            print('[-]: Disconnected from RAY.')
+
+
+    # Testing the context manager.
+    with MyRayActor(args, kwargs) as my_ray_actor:
+        assert 0 == 1 #  To raise an exception will close the session by calling __exit__()
+
+
+To upload packages you must use ``runtime_env= :runtime_env``. Check ray documentation for using runtime environments.
+Not using this feature properly will raise ``Data channel error`` in the cluster log.
+
+To create a worker you can create a RAY remote function or adding a decorator to your function.
+
+    improt ray
+
+    def big_function(args):
+        """"
+        This function takes a lot of time.
+        ...
+        """"
+        ...
+
+    @ray.remote
+    def remote_big_function(args):
+        return big_function(args)
+
+    remote_big_function_in_other_way = ray.remote(big_function)
+
+To send the job to the cluster you must call the function with the ```.remote``` method.
+
+    remote_big_function.remote(my_args)
+    remote_big_function_in_other_way.remote(my_args)
+
+Further explanations may be provided in the official RAY documentation.
 
 ## Testing
 

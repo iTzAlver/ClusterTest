@@ -1,7 +1,7 @@
 # Cluster usage: Test your RAY computing cluster.
 
 <p align="center">
-    <img src="">
+    <img src="https://github.com/iTzAlver/ClusterTest/blob/main/multimedia/cluster.png">
 </p>
 
 <p align="center">

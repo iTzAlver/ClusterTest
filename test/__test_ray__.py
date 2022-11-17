@@ -114,8 +114,8 @@ def test_chain_ray(_info_, dif: int = 8, n_workers: int = 12, chunk_size: int = 
 
 if __name__ == '__main__':
     # test_chain_work(inf_, dif=6)
-    test_chain_mp(inf_, dif=8)
-    # test_chain_ray(inf_, dif=8, n_workers=80)
+    # test_chain_mp(inf_, dif=8)
+    test_chain_ray(inf_, dif=8, n_workers=80)
 # - x - x - x - x - x - x - x - x - x - x - x - x - x - x - #
 #                        END OF FILE                        #
 # - x - x - x - x - x - x - x - x - x - x - x - x - x - x - #

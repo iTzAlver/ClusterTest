@@ -75,7 +75,7 @@ def test_chain_mp(_info_, dif: int = 8, n_workers: int = 12, chunk_size: int = 1
     print(f'[-] Total time: {time.perf_counter() - tsi} seconds.')
 
 
-def test_chain_ray(_info_, dif: int = 8, n_workers: int = 12, chunk_size: int = 1e8):
+def test_chain_ray(_info_, dif: int = 8, n_workers: int = 12, chunk_size: int = 1e8, computable_cpus: int = 36):
     """
     Tests the blockchain miner with the provided information with multiprocessing in the RAY CLUSTER.
     :param _info_: Raw information.
@@ -95,12 +95,19 @@ def test_chain_ray(_info_, dif: int = 8, n_workers: int = 12, chunk_size: int = 
         print(f'[-] Block: {public_info}.')
         print(f'[-] Rank: {len(winner.hash)} / {winner.dif}')
         print(f'[-] Hash: {Sha256(winner.block)} == {winner.hash}')
-        print(f'[-] Total time: {time.perf_counter() - tsi} seconds.')
+
+        diff = time.perf_counter() - tsi
+        mh = 16 ** dif / 1000000
+        mu = mh / diff
+        print(f'[-] Total time: {diff} seconds.')
+        print(f'[-] Average Hash: {mh} MH.')
+        print(f'[-] Average performance: {mu} MH/s.')
+        print(f'[-] Average performance per worker: {mu / computable_cpus} MH/(s·worker).')
 
 
 if __name__ == '__main__':
-    test_chain_work(inf_, dif=6)
-    test_chain_mp(inf_, dif=6)
+    # test_chain_work(inf_, dif=6)
+    # test_chain_mp(inf_, dif=6)
     test_chain_ray(inf_, dif=8, n_workers=80)
 # - x - x - x - x - x - x - x - x - x - x - x - x - x - x - #
 #                        END OF FILE                        #

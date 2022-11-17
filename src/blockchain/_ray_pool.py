@@ -72,6 +72,8 @@ class RayMinerPool:
         q, nr = ray.wait(self._futures, num_returns=1)
         if q:
             winner = ray.get(q[0])
+            if not winner:
+                winner = None
         return winner
 
     def __enter__(self):

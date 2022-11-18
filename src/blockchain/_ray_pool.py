@@ -5,6 +5,7 @@
 #                                                           #
 # - x - x - x - x - x - x - x - x - x - x - x - x - x - x - #
 # Import statements:
+import time
 import ray
 import multiprocessing
 from ._worker import Miner
@@ -19,7 +20,7 @@ def work(obj, args):
 
 
 class RayMinerPool:
-    def __init__(self, _info_: str, n_workers: int, chunk_size: int, dif: int):
+    def __init__(self, _info_: str, n_workers: int, chunk_size: int, dif: int, chunk_init: int = 0):
         """
         This class creates a Miner pool to compute the hash of the given block.
         :param _info_: Block of information.
@@ -27,17 +28,19 @@ class RayMinerPool:
         :param chunk_size: The size of the chunks inside the workers.
         :param dif: The difficulty of the blockchain.
         """
+        tsi = time.perf_counter()
         if ray.is_initialized:
             print(f'[+] Warning: ray is already initialized.')
             ray.shutdown()
         ray.init(address=RAY_ADD, runtime_env={"working_dir": f"{_package_path_}"})
+        self.init_time = time.perf_counter() - tsi
         print(f'[+] Miner Pool connected to {RAY_ADD}.')
 
         self.info = _info_
         self.workers = [Miner(_info_, dif=dif) for _ in range(n_workers)]
         self.chunk_size = int(chunk_size)
 
-        self._chunk_pointer = 0
+        self._chunk_pointer = chunk_init
         self._futures = self.__init_process__()
 
     def __init_process__(self):
